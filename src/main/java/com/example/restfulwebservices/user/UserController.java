@@ -3,6 +3,7 @@ package com.example.restfulwebservices.user;
 import com.example.restfulwebservices.company.CompanyController;
 import com.example.restfulwebservices.exception.NotFoundException;
 import com.example.restfulwebservices.task.Task;
+import com.example.restfulwebservices.task.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -21,16 +22,18 @@ import java.util.Optional;
 public class UserController {
 
     @Autowired
-    private UserService service;
+    private UserService userService;
+    @Autowired
+    private TaskService taskService;
 
     @GetMapping
     public List<User> getAllUsers() {
-        return service.findAll();
+        return userService.findAll();
     }
 
     @GetMapping(path = "/{id}")
     public User getById(@PathVariable int id) {
-        User user = service.findById(id);
+        User user = userService.findById(id);
 
         // Company hard coded - TODO
         Link companyLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
@@ -46,29 +49,34 @@ public class UserController {
         return user;
     }
 
-    @GetMapping(path = "/{id}/tasks")
-    public List<Task> getTasksForUser(@PathVariable int id) {
-        User user = service.findById(id);
-        return user.getTasks();
-    }
-
     @PostMapping
     public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
-        User savedUser = service.save(user);
+        User savedUser = userService.save(user);
 
         // Add Location header in HTTP response
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(savedUser.getId()).toUri();
-
         return ResponseEntity.created(location).build();
     }
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<Object> deleteUser(@PathVariable int id) {
-        service.deleteById(id);
+        userService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(path = "/{id}/tasks")
+    public List<Task> getTasksForUser(@PathVariable int id) {
+        return taskService.getTasksByUserId(id);
+    }
+
+    @PostMapping(path = "{id}/tasks")
+    public Task createTaskForUser(@PathVariable int id, @Valid @RequestBody Task task) {
+        User user = userService.findById(id);
+        task.setUser(user);
+        return taskService.save(task);
     }
 
 }

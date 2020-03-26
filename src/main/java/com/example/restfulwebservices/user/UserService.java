@@ -4,8 +4,6 @@ import com.example.restfulwebservices.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,26 +11,23 @@ import java.util.Optional;
 public class UserService {
 
     @Autowired
-    private UserRepository repository;
+    private UserRepository userRepository;
 
     public List<User> findAll() {
-        return repository.findAll();
+        return userRepository.findAll();
     }
 
     public User save(User user) {
-        return repository.save(user);
+        return userRepository.save(user);
     }
 
     public User findById(int id) {
-        Optional<User> user = repository.findById(id);
-        if (!user.isPresent()) {
-            throw new NotFoundException(String.format("User id: %s not found", id));
-        }
-        return user.get();
+        Optional<User> user = userRepository.findById(id);
+        return user.orElseThrow(() -> new NotFoundException(String.format("User id: %s not found", id)));
     }
 
     public void deleteById(int id) {
-        repository.deleteById(id);
+        userRepository.deleteById(id);
     }
 
 

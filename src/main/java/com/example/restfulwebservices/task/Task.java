@@ -1,12 +1,16 @@
 package com.example.restfulwebservices.task;
 
 import com.example.restfulwebservices.user.User;
-import net.minidev.json.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.Past;
 import java.util.Date;
 
+@Data
 @Entity
+@JsonIgnoreProperties({"user"})
 public class Task {
 
     @Id
@@ -14,33 +18,9 @@ public class Task {
     private Integer id;
     private String description;
 
-    @ManyToOne(fetch= FetchType.LAZY)
-    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+    @Past
     private Date createdDate;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
 }
