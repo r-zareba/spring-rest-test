@@ -1,8 +1,8 @@
-insert into user values(1, 'User1', sysdate(), 'Apple');
-insert into user values(2, 'User2', sysdate(), 'IBM');
-insert into user values(3, 'User3', sysdate(), 'IBM');
-insert into user values(4, 'User4', sysdate(), 'EY');
-insert into user values(5, 'User5', sysdate(), 'Apple');
+insert into user values(1, 'Apple', sysdate(), 'User1');
+insert into user values(2, 'IBM', sysdate(), 'User2');
+insert into user values(3, 'IBM', sysdate(), 'User3');
+insert into user values(4, 'EY', sysdate(), 'User4');
+insert into user values(5, 'Apple', sysdate(), 'User5');
 
 --insert into task values (1, sysdate(), 'Frontend to finish', 1);
 --insert into task values (2, sysdate(), 'Backend to finish', 1);
