@@ -7,6 +7,7 @@ import com.example.restfulwebservices.task.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class UserController {
         return userService.findAll();
     }
 
-    @GetMapping(path = "/{id}")
+    @GetMapping(path = "/{id}", produces = "application/json")
     public User getById(@PathVariable int id) {
         User user = userService.findById(id);
 
@@ -51,30 +52,25 @@ public class UserController {
         return user;
     }
 
-    @PostMapping
-    public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
-        User savedUser = userService.save(user);
-
-        // Add Location header in HTTP response
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedUser.getId()).toUri();
-        return ResponseEntity.created(location).build();
+    @PostMapping(consumes = "application/json")
+    @ResponseStatus(HttpStatus.CREATED)
+    public User createUser(@Valid @RequestBody User user) {
+        return userService.save(user);
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Object> deleteUser(@PathVariable int id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable int id) {
         userService.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping(path = "/{id}/tasks")
+    @GetMapping(path = "/{id}/tasks", produces = "application/json")
     public List<Task> getTasksForUser(@PathVariable int id) {
         return taskService.getTasksByUserId(id);
     }
 
-    @PostMapping(path = "{id}/tasks")
+    @PostMapping(path = "{id}/tasks", consumes = "application/json")
+    @ResponseStatus(HttpStatus.CREATED)
     public Task createTaskForUser(@PathVariable int id, @Valid @RequestBody Task task) {
         User user = userService.findById(id);
         task.setUser(user);
